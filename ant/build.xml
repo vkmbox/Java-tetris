@@ -1,0 +1,33 @@
+<project name="Java-tetris" default="all">
+
+<!--property name="file.war" value="../dist/BeeServlet.war"/-->
+
+<target name="all" description="main method" depends="compile"/>
+
+<!--target name="build.war" depends="compile">
+<delete file="${file.war}" />
+<copy todir="../web/WEB-INF" preservelastmodified="true" overwrite="true">
+            <fileset dir="../build"/>
+</copy>
+<war compress="true" encoding="UTF-8" warfile="${file.war}"
+     webxml="../web/WEB-INF/web.xml">
+<fileset dir="../web" excludes="WEB-INF/web.xml" />
+</war>
+</target-->
+
+<target name="compile" description="compiling" depends="make.dir">
+<echo>Compiling...</echo>
+<javac srcdir="../src/java" destdir="../build/classes" includeantruntime="false">
+<!--classpath location="E:/Java/glassfish-4.1/glassfish/lib/javaee.jar"/-->
+</javac>
+</target>
+
+<target name="make.dir" description="creating directories">
+<mkdir dir="../build/classes" />
+</target>
+
+<target name="clean" description="cleaning directories">
+<delete dir="../build/classes" />
+</target>
+
+</project>
