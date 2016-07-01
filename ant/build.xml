@@ -18,6 +18,7 @@
 <target name="compile" description="compiling" depends="make.dir">
 <echo>Compiling...</echo>
 <javac srcdir="../src/java" destdir="../build/classes" includeantruntime="false">
+<compilerarg value="-Xlint:unchecked"/>
 <!--classpath location="E:/Java/glassfish-4.1/glassfish/lib/javaee.jar"/-->
 </javac>
 </target>

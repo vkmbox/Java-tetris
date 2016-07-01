@@ -9,6 +9,8 @@ public class Figure2DGlass
   
   public static void SetDimensions(int pWidth, int pHeight)
   {
+    if (instance != null)
+      throw new RuntimeException("Instance already initialized");
     width = pWidth;
     height = pHeight;
   }
@@ -24,12 +26,25 @@ public class Figure2DGlass
     return instance;
   }
   
-  private List<Figure> figures = new ArrayList();
-  
-  //public Figure2DGlass()
+  private LinkedList<Figure> figures = new LinkedList<>();
+
+  public Figure getCurrent()
+  {
+    return figures.getFirst();
+  }
   
   public void Add(Figure element)
   {
-    
+    figures.addFirst(element);
+  }
+  
+  public List<Figure.Point> getPoints()
+  {
+    List<Figure.Point> result = new ArrayList<>();
+    ListIterator<Figure> itr = figures.listIterator();
+    while (itr.hasNext())
+      result.addAll(itr.next().getPoints());
+    return result;
+      
   }
 }
