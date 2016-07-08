@@ -2,7 +2,7 @@ package tetris.glass;
 
 import java.util.*;
 
-public class Figure2DGlass
+public class Glass2D
 {
   private static int width;
   private static int height;
@@ -15,36 +15,40 @@ public class Figure2DGlass
     height = pHeight;
   }
   
-  private static Figure2DGlass instance;
+  private static Glass2D instance;
   //Not thread-safe because no threads in application
-  public static Figure2DGlass getInstance()
+  public static Glass2D getInstance()
   {
     if (width == 0 || height == 0)
       throw new IllegalArgumentException("width and height should be installed, use SetDimensions method");
     if (instance == null) 
-      instance = new Figure2DGlass();
+      instance = new Glass2D();
     return instance;
   }
   
-  private LinkedList<Figure> figures = new LinkedList<>();
-
+  private ArrayList<GlassPoint> points = new ArrayList<>();
+  private Figure current;
   public Figure getCurrent()
   {
-    return figures.getFirst();
+    return current;
+  }
+  public void Add(Figure pElement)
+  {
+    current = pElement;
+    current.setPointsXYZ();
+    current.savePointsTo(points);
+    //figures.addFirst(element);
   }
   
-  public void Add(Figure element)
+  public List<GlassPoint> getPoints()
   {
-    figures.addFirst(element);
-  }
-  
-  public List<Figure.Point> getPoints()
-  {
-    List<Figure.Point> result = new ArrayList<>();
+    return points; //new ArrayList(points);
+    
+    /*List<Figure.Point> result = new ArrayList<>();
     ListIterator<Figure> itr = figures.listIterator();
     while (itr.hasNext())
       result.addAll(itr.next().getPoints());
-    return result;
+    return result;*/
       
   }
 }

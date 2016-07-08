@@ -5,6 +5,10 @@ import java.awt.Color;
 
 public abstract class Figure
 {
+  public enum FigureType
+  {
+    STICK, LEFTCORNER, RIGHTCORNER, SQUARE, TRIANGLE;
+  }  
   public enum Direction
   {
     NORTH, EAST, SOUTH, WEST;
@@ -16,55 +20,46 @@ public abstract class Figure
   protected Figure.Direction fgXY;
   public Figure.Direction getFgXY(){ return fgXY; }
   
-  public class Point
+  public class FigurePoint
   {
-    //Set relative position for Direction.NORTH
-    public Point(int pX, int pY, int pZ)
-    {
-      relX = pX; relY = pY; relZ = pZ;
-    }
-    
     private final int relX;
-    public int getPosX()
-    { 
-      switch(Figure.this.getFgXZ())
-      {
-        case NORTH: 
-          return Figure.this.getPosX() + relX;
-        case EAST: 
-          return Figure.this.getPosX() - relY;
-        case SOUTH:
-          return Figure.this.getPosX() - relX;
-        case WEST:
-          return Figure.this.getPosX() + relY;
-        default:
-          return 0;
-      }
-    }
-    
     private final int relY;
-    public int getPosY()
+    private final int relZ;
+    private GlassPoint point;
+
+    public FigurePoint(GlassPoint pPoint, int pX, int pY, int pZ)
+    {
+      point = pPoint; relX = pX; relY = pY; relZ = pZ;
+    }
+    
+    public void setPosXYZ()
     { 
       switch(Figure.this.getFgXZ())
       {
         case NORTH: 
-          return Figure.this.getPosY() + relY;
+          point.setPosX(Figure.this.getPosX() + relX);
+          point.setPosY(Figure.this.getPosY() + relY);
+          point.setPosZ(0);
+          break;
         case EAST: 
-          return Figure.this.getPosY() - relX;
+          point.setPosX(Figure.this.getPosX() - relY);
+          point.setPosY(Figure.this.getPosY() - relX);
+          point.setPosZ(0);
+          break;
         case SOUTH:
-          return Figure.this.getPosY() - relY;
+          point.setPosX(Figure.this.getPosX() - relX);
+          point.setPosY(Figure.this.getPosY() - relY);
+          point.setPosZ(0);
+          break;
         case WEST:
-          return Figure.this.getPosY() + relX;
-        default:
-          return 0;
+          point.setPosX(Figure.this.getPosX() + relY);
+          point.setPosY(Figure.this.getPosY() + relX);
+          point.setPosZ(0);
+          break;
+        //default:
+        //  return 0;
       }
     }
-    
-    private final int relZ;
-    public int getPosZ(){ return 0; }
-    
-    //private Color color;
-    public Color getColor(){ return Figure.this.fgColor; }
   }
   
   protected final FigureType fgType;
@@ -73,13 +68,20 @@ public abstract class Figure
     return fgType;
   }
   
-  protected /*final*/ List<Point> points;
-  public List<Point> getPoints()
-  {
-    return new ArrayList(points);
+  protected /*final*/ List<FigurePoint> points;
+  public void savePointsTo( List<GlassPoint> dest )
+  { 
+    for (FigurePoint fp : points)
+      dest.add(fp.point);
   }
   
-  protected /*final*/ Color fgColor;
+  public void setPointsXYZ()
+  {
+    for (FigurePoint fp : points)
+      fp.setPosXYZ();
+  }
+  
+  protected final Color fgColor;
   public Color getColor()
   {
     return fgColor;
@@ -94,9 +96,11 @@ public abstract class Figure
   private int posZ;
   public int getPosZ(){ return posZ; }
   
-  protected Figure( FigureType pFgType, int pPosX, int pPosY, int pPosZ, Figure.Direction pFgXZ, Figure.Direction pFgXY )
+  protected Figure( FigureType pFgType, Color pColor, int pPosX, int pPosY, int pPosZ
+                  , Figure.Direction pFgXZ, Figure.Direction pFgXY )
   {
     fgType = pFgType;
+    fgColor = pColor;
     posX = pPosX;
     posY = pPosY;
     posZ = pPosZ;

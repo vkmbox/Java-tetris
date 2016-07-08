@@ -1,10 +1,15 @@
 package tetris.glass;
 
+import java.util.*;
+import java.awt.Color;
+
 public class Figure2DSquare extends Figure
 {
   public Figure2DSquare(int pPosX, int pPosY, Figure.Direction pFgXZ)
   {
-    super(FigureType.SQUARE, pPosX, pPosY, 0, pFgXZ, Figure.Direction.NORTH);
-    //...
+    super(Figure.FigureType.SQUARE, Color.YELLOW, pPosX, pPosY, 0, pFgXZ, Figure.Direction.NORTH);
+    points = Arrays.asList
+      ( new FigurePoint(new GlassPoint(Color.YELLOW),-1,1,0), new FigurePoint(new GlassPoint(Color.YELLOW),1,1,0)
+      , new FigurePoint(new GlassPoint(Color.YELLOW),1,-1,0), new FigurePoint(new GlassPoint(Color.YELLOW),-1,-1,0));
   }
 }
