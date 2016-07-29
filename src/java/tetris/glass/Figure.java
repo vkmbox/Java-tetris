@@ -12,6 +12,22 @@ public abstract class Figure
   public enum Direction
   {
     NORTH, EAST, SOUTH, WEST;
+    public static Direction byOrder(int order)
+    {
+      switch ( order )
+      {
+        case 0:
+          return Direction.NORTH;
+        case 1:
+          return Direction.EAST;
+        case 2:
+          return Direction.SOUTH;
+        case 3:
+          return Direction.WEST;
+        default:
+          throw new IllegalArgumentException("order may be 0,1,2,3");
+      }
+    }
   }
 
   protected Figure.Direction fgXZ;
@@ -26,6 +42,10 @@ public abstract class Figure
     private final int relY;
     private final int relZ;
     private GlassPoint point;
+    public GlassPoint getPoint()
+    {
+      return point;
+    }
 
     public FigurePoint(GlassPoint pPoint, int pX, int pY, int pZ)
     {
@@ -89,12 +109,14 @@ public abstract class Figure
 
   private int posX;
   public int getPosX(){ return posX; }
+  public void shiftX(boolean pIsLeft){ posX = posX + (pIsLeft ? -1 : +1); }
     
   private int posY;
   public int getPosY(){ return posY; }
-    
+   
   private int posZ;
   public int getPosZ(){ return posZ; }
+  public void shiftZ(){ ++posZ; }
   
   protected Figure( FigureType pFgType, Color pColor, int pPosX, int pPosY, int pPosZ
                   , Figure.Direction pFgXZ, Figure.Direction pFgXY )

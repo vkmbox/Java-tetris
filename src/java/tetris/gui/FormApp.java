@@ -15,6 +15,7 @@ public class FormApp extends Application
 {
   public static void main(String[] args)
   {
+    Glass2D.SetDimensions(10, 20);
     launch(args);
   }
   

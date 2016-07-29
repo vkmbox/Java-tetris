@@ -2,6 +2,14 @@ package tetris.glass;
 
 import java.util.*;
 
+// Coordinates:
+//
+//  0,0    \
+//  ---------
+//  |      /
+//  |
+// \|/
+//  |
 public class Glass2D
 {
   private static int width;
@@ -26,18 +34,62 @@ public class Glass2D
     return instance;
   }
   
+  private Random rnd = new Random();
   private ArrayList<GlassPoint> points = new ArrayList<>();
   private Figure current;
   public Figure getCurrent()
   {
     return current;
   }
-  public void Add(Figure pElement)
+  
+  //
+  public void doStep() throws NoPlaceForFigureException
   {
+    if (getCurrent() == null)
+    {  
+      add();
+      return;
+    }
+    
+    if ( isIntersection(getCurrent(), 0, 1) )
+    {  
+      add();
+      return;
+    }
+    
+    getCurrent().shiftZ();
+    
+  }
+  
+  //Checks if figure can be added in top line
+  public void add() throws NoPlaceForFigureException //
+  {
+    Figure pElement = null;
+    switch (rnd.nextInt(5))
+    {
+      case 0:
+      case 1:
+      case 2:
+      case 3:
+      case 4:
+        pElement = new Figure2DSquare(rnd.nextInt(width), Figure.Direction.byOrder(rnd.nextInt(4)));
+    }
+    if (isIntersection(pElement, 0, 0)) throw new NoPlaceForFigureException();
+    
     current = pElement;
     current.setPointsXYZ();
     current.savePointsTo(points);
     //figures.addFirst(element);
+  }
+  
+  public boolean isIntersection(Figure pElement, int pShiftX, int pShiftY)
+  {
+    for (Figure.FigurePoint fp : pElement.points)
+      for (GlassPoint gp: points)
+        if ( fp.getPoint().getPosX()+pShiftX == gp.getPosX() && fp.getPoint().getPosY()+pShiftY == gp.getPosY() )
+          return true;
+    
+    return false;
   }
   
   public List<GlassPoint> getPoints()
