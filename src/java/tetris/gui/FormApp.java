@@ -39,6 +39,7 @@ public class FormApp extends Application
       new KeyFrame( Duration.millis(1250)
       , new EventHandler<ActionEvent>()
         {
+          @Override
           public void handle(ActionEvent event)
           {
             System.out.println("XX");
@@ -56,6 +57,7 @@ public class FormApp extends Application
     item.setOnAction( 
     new EventHandler<ActionEvent> ()
     {
+      @Override
       public void handle(ActionEvent event)
       {
         if (item.getText().equals("Start"))

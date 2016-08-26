@@ -1,8 +1,13 @@
-<project name="Java-tetris" default="all">
+<project name="Java-tetris" default="all" xmlns:fx="javafx:com.sun.javafx.tools.ant">
 
+<property name="JAVA_HOME" value="E:\\Java\\jdk1.8.0_60"/>
 <!--property name="file.war" value="../dist/BeeServlet.war"/-->
 
-<target name="all" description="main method" depends="compile"/>
+<target name="run">
+  <java jar="../trg/TetrisGui.jar" fork="true"/>
+</target>
+
+<target name="all" description="main method" depends="build.jar"/>
 
 <!--target name="build.war" depends="compile">
 <delete file="${file.war}" />
@@ -15,20 +20,58 @@
 </war>
 </target-->
 
+  <target name="build.jar" description="building jar" depends="clean,compile">
+ 
+    <taskdef resource="com/sun/javafx/tools/ant/antlib.xml"
+      uri="javafx:com.sun.javafx.tools.ant"
+      classpath="${JAVA_HOME}/lib/ant-javafx.jar"/>
+ 
+      <fx:application id="TetrisGuiID"
+        name="TetrisGui"
+        mainClass="tetris.gui.FormApp"/>
+ 
+      <!--fx:resources id="appRes">
+        <fx:fileset dir="../trg" includes="TetrisGui.jar"/>
+      </fx:resources-->
+ 
+      <fx:jar destfile="../trg/TetrisGui.jar">
+        <fx:application refid="TetrisGuiID"/>
+        <!--fx:resources refid="appRes"/-->
+        <fileset dir="../build/classes"/>
+      </fx:jar>
+ 
+      <!--fx:deploy width="300" height="250"
+        outdir="." embedJNLP="true"
+        outfile="helloworld">
+ 
+        <fx:application refId="HelloWorldID"/>
+ 
+        <fx:resources refid="appRes"/>
+ 
+        <fx:info title="JavaFX Hello World Application"
+          vendor="Oracle Corporation"/>
+ 
+      </fx:deploy-->
+ 
+  </target>
+
 <target name="compile" description="compiling" depends="make.dir">
 <echo>Compiling...</echo>
 <javac srcdir="../src/java" destdir="../build/classes" includeantruntime="false">
-<compilerarg value="-Xlint:unchecked"/>
+<!--compilerarg value="-Xlint:unchecked"/-->
+<compilerarg value="-g:source,lines,vars"/>
 <!--classpath location="E:/Java/glassfish-4.1/glassfish/lib/javaee.jar"/-->
 </javac>
 </target>
 
 <target name="make.dir" description="creating directories">
 <mkdir dir="../build/classes" />
+<mkdir dir="../trg" />
 </target>
 
 <target name="clean" description="cleaning directories">
 <delete dir="../build/classes" />
+<delete dir="../trg" />
 </target>
 
 </project>
