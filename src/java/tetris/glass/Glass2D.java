@@ -35,7 +35,13 @@ public class Glass2D
   }
   
   private Random rnd = new Random();
-  private ArrayList<GlassPoint> points = new ArrayList<>();
+  private final ArrayList<GlassPoint> points = new ArrayList<>();
+  
+  public void initialize()
+  {
+    points.clear();
+  }
+  
   private Figure current;
   public Figure getCurrent()
   {
@@ -53,11 +59,12 @@ public class Glass2D
     
     if ( isIntersection(getCurrent(), 0, 1) )
     {  
+      getCurrent().savePointsTo(points);
       add();
       return;
     }
     
-    getCurrent().shiftZ();
+    getCurrent().shiftY();
     
   }
   
@@ -78,15 +85,16 @@ public class Glass2D
     
     current = pElement;
     current.setPointsXYZ();
-    current.savePointsTo(points);
+    //current.savePointsTo(points);
     //figures.addFirst(element);
   }
   
   public boolean isIntersection(Figure pElement, int pShiftX, int pShiftY)
   {
-    for (Figure.FigurePoint fp : pElement.points)
-      for (GlassPoint gp: points)
-        if ( fp.getPoint().getPosX()+pShiftX == gp.getPosX() && fp.getPoint().getPosY()+pShiftY == gp.getPosY() )
+    for (GlassPoint gp: points)
+      for (Figure.FigurePoint fp : pElement.points)
+        if ( fp.getPoint() != gp && fp.getPoint().getPosX()+pShiftX == gp.getPosX() 
+          && fp.getPoint().getPosY()+pShiftY == gp.getPosY() )
           return true;
     
     return false;

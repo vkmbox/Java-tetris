@@ -1,7 +1,7 @@
 package tetris.glass;
 
 import java.util.*;
-import java.awt.Color;
+import tetris.glass.GlassPoint.*;
 
 public abstract class Figure
 {
@@ -89,6 +89,13 @@ public abstract class Figure
   }
   
   protected /*final*/ List<FigurePoint> points;
+  public List<GlassPoint> getGlassPoints()
+  {
+    List<GlassPoint> result = new ArrayList(points.size());
+    points.stream().forEach(( FigurePoint fp )->{result.add(fp.getPoint());});
+    return result;
+  }
+  
   public void savePointsTo( List<GlassPoint> dest )
   { 
     for (FigurePoint fp : points)
@@ -116,7 +123,8 @@ public abstract class Figure
    
   private int posZ;
   public int getPosZ(){ return posZ; }
-  public void shiftZ(){ ++posZ; }
+  public void shiftZ(){ ++posZ; setPointsXYZ(); }
+  public void shiftY(){ ++posY; setPointsXYZ(); }
   
   protected Figure( FigureType pFgType, Color pColor, int pPosX, int pPosY, int pPosZ
                   , Figure.Direction pFgXZ, Figure.Direction pFgXY )

@@ -1,9 +1,23 @@
 package tetris.glass;
 
-import java.awt.Color;
-
 public class GlassPoint
 {
+  public static final class Color
+  {
+    public static final Color YELLOW = new Color(255, 255, 0);
+    
+    public Color(int r, int g, int b) 
+    { this.R = r; this.G = g; this.B = b; }
+    
+    private final int R;
+    public int getRed() { return this.R; }  
+    
+    private final int G;
+    public int getGreen() { return this.G; }  
+    
+    private final int B;
+    public int getBlue() { return this.B; }  
+  }
   //Set relative position for Direction.NORTH
   public GlassPoint(Color pColor) //(int pX, int pY, int pZ)
   {
