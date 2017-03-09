@@ -91,12 +91,14 @@ public class Glass2D
   
   public boolean isIntersection(Figure pElement, int pShiftX, int pShiftY)
   {
-    for (GlassPoint gp: points)
-      for (Figure.FigurePoint fp : pElement.points)
-        if ( fp.getPoint() != gp && fp.getPoint().getPosX()+pShiftX == gp.getPosX() 
-          && fp.getPoint().getPosY()+pShiftY == gp.getPosY() )
+    for (Figure.FigurePoint fp : pElement.points)
+    {
+      int posX = fp.getPoint().getPosX()+pShiftX, posY = fp.getPoint().getPosY()+pShiftY;
+      if ( posX > width || posX < 0 || posY > height ) return true;
+      for (GlassPoint gp: points)
+        if ( fp.getPoint() != gp && posX == gp.getPosX() && posY == gp.getPosY() )
           return true;
-    
+    }
     return false;
   }
   

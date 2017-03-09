@@ -59,7 +59,9 @@ public class FormApp extends Application
               Glass2D.getInstance().doStep();
               //Drawing picture
               GraphicsContext gc = canvas.getGraphicsContext2D();
-              gc.fill();
+              gc.setFill(Color.BLUE);
+              gc.fillRect(0,0,DIM_X*PIX_IN_POINT, DIM_Y*PIX_IN_POINT);
+              //gc.fill();
               for ( GlassPoint gp : Glass2D.getInstance().getCurrent().getGlassPoints())
                 writeGlassPoint(gp);
               for ( GlassPoint gp : Glass2D.getInstance().getPoints() )
