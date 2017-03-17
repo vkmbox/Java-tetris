@@ -79,12 +79,12 @@ public class Glass2D
       case 2:
       case 3:
       case 4:
-        pElement = new Figure2DSquare(rnd.nextInt(width), Figure.Direction.byOrder(rnd.nextInt(4)));
+        pElement = new Figure2DSquare(1+rnd.nextInt(width-2), Figure.Direction.byOrder(rnd.nextInt(4)));
     }
+    pElement.setPointsXYZ();
     if (isIntersection(pElement, 0, 0)) throw new NoPlaceForFigureException();
     
     current = pElement;
-    current.setPointsXYZ();
     //current.savePointsTo(points);
     //figures.addFirst(element);
   }
