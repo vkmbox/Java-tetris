@@ -40,6 +40,7 @@ public class Glass2D
   public void initialize()
   {
     points.clear();
+    current = null;
   }
   
   private Figure current;
@@ -75,11 +76,20 @@ public class Glass2D
     switch (rnd.nextInt(5))
     {
       case 0:
+        pElement = new Figure2DStick(1+rnd.nextInt(width-2), Figure.Direction.byOrder(rnd.nextInt(4)));
+        break;
       case 1:
+        pElement = new Figure2DLeftCorner(1+rnd.nextInt(width-2), Figure.Direction.byOrder(rnd.nextInt(4)));
+        break;
       case 2:
+        pElement = new Figure2DRightCorner(1+rnd.nextInt(width-2), Figure.Direction.byOrder(rnd.nextInt(4)));
+        break;
       case 3:
-      case 4:
         pElement = new Figure2DSquare(1+rnd.nextInt(width-2), Figure.Direction.byOrder(rnd.nextInt(4)));
+        break;
+      case 4:
+        pElement = new Figure2DTriangle(1+rnd.nextInt(width-2), Figure.Direction.byOrder(rnd.nextInt(4)));
+        break;
     }
     pElement.setPointsXYZ();
     if (isIntersection(pElement, 0, 0)) throw new NoPlaceForFigureException();
@@ -100,6 +110,14 @@ public class Glass2D
           return true;
     }
     return false;
+  }
+  
+  public boolean isIntersection( Figure pElement, boolean clockwise ) 
+  {
+    pElement.rotateXY(clockwise);
+    boolean result = isIntersection(pElement, 0, 0);
+    pElement.rotateXY(!clockwise);
+    return result;
   }
   
   public List<GlassPoint> getPoints()

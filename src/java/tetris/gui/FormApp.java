@@ -22,6 +22,11 @@ public class FormApp extends Application
   static final int DIM_Y = 20;
   static final int PIX_IN_POINT = 20;
   
+  private static enum GameStatus
+  { FINISHED, PLAYING, PAUSED }
+  
+  private GameStatus gameStatus;
+  
   Timeline timeline;
   Canvas canvas;
   
@@ -34,26 +39,20 @@ public class FormApp extends Application
   @Override
   public void start(Stage primaryStage) 
   {
-    /*class TimerEvent extends EventHandler<ActionEvent>
-    {
-      public void handle(ActionEvent event)
-      {
-        System.out.println("XX");
-      }
-    }*/
-    
     Group root = new Group();
     Scene scene = new Scene(root, (DIM_X+1)*PIX_IN_POINT, (DIM_Y+4)*PIX_IN_POINT); //, Color.BLACK
     canvas = new Canvas((DIM_X+1)*PIX_IN_POINT, (DIM_Y+4)*PIX_IN_POINT);
+    gameStatus = GameStatus.FINISHED;
     
     MenuBar  menuBar = new MenuBar();
     Menu menuFile = new Menu("File");
-    MenuItem item = new MenuItem("Start");
-    menuFile.getItems().addAll(item);
+    MenuItem itemStart = new MenuItem("Start");
+    MenuItem itemPause = new MenuItem("Pause");
+    menuFile.getItems().addAll(itemStart, itemPause);
     menuBar.getMenus().addAll(menuFile);
     root.getChildren().addAll(canvas,menuBar); 
 
-    scene.setOnKeyPressed(new EventHandler<KeyEvent>()
+    scene.setOnKeyPressed(new EventHandler<KeyEvent>() //null); setOnKeyPressed setOnKeyTyped
     {
       @Override
       public void handle(KeyEvent event)
@@ -62,9 +61,13 @@ public class FormApp extends Application
         if (current == null) return;
         switch ( event.getCode() )
         {
+          case UP: 
+            if (Glass2D.getInstance().isIntersection(current, false) == false)
+            { current.rotateXY(false); drawPoints();}
+            break;
           case DOWN: 
             if (Glass2D.getInstance().isIntersection(current, 0, 1) == false)
-            { current.shiftY(); drawPoints(); }
+            { current.shiftY(); drawPoints();}
             break;
           case LEFT:
             if (Glass2D.getInstance().isIntersection(current, -1, 0) == false)
@@ -80,7 +83,7 @@ public class FormApp extends Application
     );
     
     timeline = new Timeline(
-      new KeyFrame( Duration.millis(500)
+      new KeyFrame( Duration.millis(2500)
       , new EventHandler<ActionEvent>()
         {
           @Override
@@ -91,7 +94,7 @@ public class FormApp extends Application
               Glass2D.getInstance().doStep();
               //Drawing picture
               drawPoints();
-              System.out.println("XX");
+              //System.out.println("XX");
             }
             catch (NoPlaceForFigureException ex)
             {
@@ -104,31 +107,66 @@ public class FormApp extends Application
       ));
     timeline.setCycleCount(Animation.INDEFINITE);  
 
-    item.setOnAction( 
-    new EventHandler<ActionEvent> ()
-    {
-      @Override
-      public void handle(ActionEvent event)
+    itemStart.setOnAction
+    ( new EventHandler<ActionEvent> ()
       {
-        if (item.getText().equals("Start"))
+        @Override
+        public void handle(ActionEvent event)
         {
-          Glass2D.getInstance().initialize();
-          timeline.play();
-          item.setText("Stop");
-        }
-        else
-        {
-          timeline.stop();
-          item.setText("Start");
+          switch (gameStatus)
+          {  
+            case FINISHED:
+              Glass2D.getInstance().initialize();
+              itemStart.setText("Stop");
+              gameStatus = GameStatus.PLAYING;
+              timeline.play();
+              break;
+            case PAUSED:
+            case PLAYING:
+              timeline.stop();
+              Glass2D.getInstance().initialize();
+              drawPoints();
+              itemStart.setText("Start");
+              itemPause.setText("Pause");
+              gameStatus = GameStatus.FINISHED;
+              break;
+          }
         }
       }
-    }
+    );
+    
+    itemPause.setOnAction
+    ( new EventHandler<ActionEvent> ()
+      {
+        @Override
+        public void handle(ActionEvent event)
+        {
+          switch (gameStatus)
+          {  
+            case PLAYING:
+              timeline.stop();
+              itemPause.setText("Resume");
+              gameStatus = GameStatus.PAUSED;
+              break;
+            case PAUSED:
+              timeline.play();
+              itemPause.setText("Pause");
+              gameStatus = GameStatus.PLAYING;
+              break;
+          }
+        }
+      }
+    );
+    
+    itemPause.setOnMenuValidation
+    ( new EventHandler<Event> () 
+      {
+        @Override
+        public void handle(Event event)
+        { itemPause.setDisable(gameStatus == GameStatus.FINISHED); }        
+      }
     );
 
-//    GraphicsContext gc = canvas.getGraphicsContext2D();
-//    gc.fillRect(75,75,100,100);
- 
-    //root.getChildren().addAll(canvas,menuBar); 
     primaryStage.setScene(scene);
     primaryStage.show();      
   }
@@ -140,8 +178,9 @@ public class FormApp extends Application
     gc.fillRect(0,0,(DIM_X+1)*PIX_IN_POINT, (DIM_Y+4)*PIX_IN_POINT);
     gc.setFill(Color.BLACK);
     gc.strokeRect(0,0,(DIM_X+1)*PIX_IN_POINT, (DIM_Y+4)*PIX_IN_POINT);
-    for ( GlassPoint gp : Glass2D.getInstance().getCurrent().getGlassPoints())
-      drawGlassPoint(gp);
+    if (Glass2D.getInstance().getCurrent() != null)
+      for ( GlassPoint gp : Glass2D.getInstance().getCurrent().getGlassPoints())
+        drawGlassPoint(gp);
     for ( GlassPoint gp : Glass2D.getInstance().getPoints() )
       drawGlassPoint(gp);    
   }

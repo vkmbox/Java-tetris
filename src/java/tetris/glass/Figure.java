@@ -28,6 +28,22 @@ public abstract class Figure
           throw new IllegalArgumentException("order may be 0,1,2,3");
       }
     }
+    public static Direction nextDirection(Direction val, boolean clockwise)
+    {
+      switch ( val )
+      {
+        case NORTH:
+          return clockwise == true ? Direction.EAST:Direction.WEST;
+        case EAST:
+          return clockwise == true ? Direction.SOUTH:Direction.NORTH;
+        case SOUTH:
+          return clockwise == true ? Direction.WEST:Direction.EAST;
+        case WEST:
+          return clockwise == true ? Direction.NORTH:Direction.SOUTH;
+        default:
+          throw new IllegalArgumentException("No order defined");
+      }
+    }
   }
 
   protected Figure.Direction fgXZ;
@@ -54,7 +70,7 @@ public abstract class Figure
     
     public void setPosXYZ()
     { 
-      switch(Figure.this.getFgXZ())
+      switch(Figure.this.getFgXY())
       {
         case NORTH: 
           point.setPosX(Figure.this.getPosX() + relX);
@@ -88,12 +104,15 @@ public abstract class Figure
     return fgType;
   }
   
-  protected /*final*/ List<FigurePoint> points;
+  protected List<FigurePoint> points;
+  protected List<GlassPoint> glassPoints = new ArrayList<>();
+
   public List<GlassPoint> getGlassPoints()
   {
-    List<GlassPoint> result = new ArrayList(points.size());
+    /*List<GlassPoint> result = new ArrayList(points.size());
     points.stream().forEach(( FigurePoint fp )->{result.add(fp.getPoint());});
-    return result;
+    return result;*/
+    return glassPoints;
   }
   
   public void savePointsTo( List<GlassPoint> dest )
@@ -116,7 +135,7 @@ public abstract class Figure
 
   private int posX;
   public int getPosX(){ return posX; }
-  public void shiftX(boolean pIsLeft){ posX = posX + (pIsLeft ? -1 : +1); }
+  public void shiftX(boolean pIsLeft){ posX = posX + (pIsLeft ? -1 : +1); setPointsXYZ(); }
     
   private int posY;
   public int getPosY(){ return posY; }
@@ -125,6 +144,8 @@ public abstract class Figure
   public int getPosZ(){ return posZ; }
   public void shiftZ(){ ++posZ; setPointsXYZ(); }
   public void shiftY(){ ++posY; setPointsXYZ(); }
+  public void rotateXY(boolean clockwise)
+  { fgXY = Direction.nextDirection(fgXY, clockwise); setPointsXYZ(); }
   
   protected Figure( FigureType pFgType, Color pColor, int pPosX, int pPosY, int pPosZ
                   , Figure.Direction pFgXZ, Figure.Direction pFgXY )
