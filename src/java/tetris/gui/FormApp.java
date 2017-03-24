@@ -13,6 +13,7 @@ import javafx.scene.paint.*;
 import javafx.scene.canvas.*;
 import javafx.scene.input.KeyEvent;
 import javafx.util.*;
+import java.util.List;
 
 import tetris.glass.*;
 
@@ -83,7 +84,7 @@ public class FormApp extends Application
     );
     
     timeline = new Timeline(
-      new KeyFrame( Duration.millis(2500)
+      new KeyFrame( Duration.millis(500)
       , new EventHandler<ActionEvent>()
         {
           @Override
@@ -92,6 +93,8 @@ public class FormApp extends Application
             try
             {
               Glass2D.getInstance().doStep();
+              //double dur = timeline.getCycleDuration().toMillis();
+              //timeline.setCycleDuration(Duration.millis(dur-1));
               //Drawing picture
               drawPoints();
               //System.out.println("XX");
@@ -99,7 +102,8 @@ public class FormApp extends Application
             catch (NoPlaceForFigureException ex)
             {
               if (timeline != null) timeline.stop();
-              Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "The game is over");
+              Alert alert = new Alert(Alert.AlertType.CONFIRMATION
+                , "The game is over, score:"+Glass2D.getInstance().getScore());
               alert.show(); //.showAndWait();
             }
           }
@@ -181,8 +185,10 @@ public class FormApp extends Application
     if (Glass2D.getInstance().getCurrent() != null)
       for ( GlassPoint gp : Glass2D.getInstance().getCurrent().getGlassPoints())
         drawGlassPoint(gp);
-    for ( GlassPoint gp : Glass2D.getInstance().getPoints() )
-      drawGlassPoint(gp);    
+    for ( List<GlassPoint> list : Glass2D.getInstance().getPoints() )
+      if (list != null)
+        for (GlassPoint gp : list)
+          drawGlassPoint(gp);
   }
   
   private void drawGlassPoint(GlassPoint gp)

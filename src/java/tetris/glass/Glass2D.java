@@ -35,12 +35,14 @@ public class Glass2D
   }
   
   private Random rnd = new Random();
-  private final ArrayList<GlassPoint> points = new ArrayList<>();
+  private final ArrayList<GlassPoint>[] points = new ArrayList[height]; //ArrayList<GlassPoint> points = new ArrayList<>();
   
   public void initialize()
   {
-    points.clear();
+    for ( int ii = 0; ii < points.length; ii++)
+      points[ii] = null;
     current = null;
+    score = 0;
   }
   
   private Figure current;
@@ -60,23 +62,47 @@ public class Glass2D
     
     if ( isIntersection(getCurrent(), 0, 1) )
     {  
-      getCurrent().savePointsTo(points);
+      getCurrent().savePointsToArray(points);
+      checkAndRemoveLines();
       add();
       return;
     }
     
     getCurrent().shiftY();
-    
+  }
+  
+  private int score;
+  public int getScore() { return score; }  
+  
+  private void checkAndRemoveLines()
+  {
+    int ii = height - 1;
+    while ( ii >=0)
+    {  
+      if (points[ii] != null && points[ii].size() >= width+1)
+      {  
+        score++;
+        for ( int jj = ii; jj > 0; jj-- )
+        {  
+          points[jj] = points[jj - 1];
+          if (points[jj] != null)
+            for (GlassPoint gp: points[jj])
+              gp.setPosY(jj+1);
+        }
+      }
+      else
+        ii--;
+    }
   }
   
   //Checks if figure can be added in top line
-  public void add() throws NoPlaceForFigureException //
+  private void add() throws NoPlaceForFigureException //
   {
     Figure pElement = null;
     switch (rnd.nextInt(5))
     {
       case 0:
-        pElement = new Figure2DStick(1+rnd.nextInt(width-2), Figure.Direction.byOrder(rnd.nextInt(4)));
+        pElement = new Figure2DStick(2+rnd.nextInt(width-4), Figure.Direction.byOrder(rnd.nextInt(4)));
         break;
       case 1:
         pElement = new Figure2DLeftCorner(1+rnd.nextInt(width-2), Figure.Direction.byOrder(rnd.nextInt(4)));
@@ -105,9 +131,11 @@ public class Glass2D
     {
       int posX = fp.getPoint().getPosX()+pShiftX, posY = fp.getPoint().getPosY()+pShiftY;
       if ( posX > width || posX < 0 || posY > height ) return true;
-      for (GlassPoint gp: points)
-        if ( fp.getPoint() != gp && posX == gp.getPosX() && posY == gp.getPosY() )
-          return true;
+      for (ArrayList<GlassPoint> list: points)
+        if (list != null)
+          for (GlassPoint gp: list)
+            if ( fp.getPoint() != gp && posX == gp.getPosX() && posY == gp.getPosY() )
+              return true;
     }
     return false;
   }
@@ -120,7 +148,7 @@ public class Glass2D
     return result;
   }
   
-  public List<GlassPoint> getPoints()
+  public List<GlassPoint>[] getPoints()
   {
     return points; //new ArrayList(points);
     

@@ -79,7 +79,7 @@ public abstract class Figure
           break;
         case EAST: 
           point.setPosX(Figure.this.getPosX() - relY);
-          point.setPosY(Figure.this.getPosY() - relX);
+          point.setPosY(Figure.this.getPosY() + relX);
           point.setPosZ(0);
           break;
         case SOUTH:
@@ -89,7 +89,7 @@ public abstract class Figure
           break;
         case WEST:
           point.setPosX(Figure.this.getPosX() + relY);
-          point.setPosY(Figure.this.getPosY() + relX);
+          point.setPosY(Figure.this.getPosY() - relX);
           point.setPosZ(0);
           break;
         //default:
@@ -119,6 +119,21 @@ public abstract class Figure
   { 
     for (FigurePoint fp : points)
       dest.add(fp.point);
+  }
+
+  public void savePointsToArray( List<GlassPoint>[] dest )
+  { 
+    for (FigurePoint fp : points)
+    {  
+      GlassPoint pt = fp.point;
+      List<GlassPoint> list = dest[pt.getPosY()-1];
+      if (list == null)
+      {
+        list = new ArrayList<>();
+        dest[pt.getPosY()-1] = list;
+      }
+      list.add(pt);
+    }
   }
   
   public void setPointsXYZ()
