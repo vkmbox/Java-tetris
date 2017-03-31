@@ -121,11 +121,13 @@ public abstract class Figure
       dest.add(fp.point);
   }
 
-  public void savePointsToArray( List<GlassPoint>[] dest )
+  public void savePointsToArray( List<GlassPoint>[] dest ) throws NoPlaceForFigureException
   { 
     for (FigurePoint fp : points)
     {  
       GlassPoint pt = fp.point;
+      if ( pt.getPosY() < 1 || pt.getPosY() > dest.length )
+        throw new NoPlaceForFigureException();
       List<GlassPoint> list = dest[pt.getPosY()-1];
       if (list == null)
       {

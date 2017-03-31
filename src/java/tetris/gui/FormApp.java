@@ -5,7 +5,8 @@ import javafx.animation.*;
 import javafx.event.*;
 import javafx.event.EventHandler;
 import javafx.stage.Stage;
-//import javafx.geometry.*;
+import javafx.scene.layout.GridPane;
+import javafx.geometry.*;
 //import javafx.scene.text.*;
 import javafx.scene.control.*;
 import javafx.scene.*;
@@ -19,8 +20,8 @@ import tetris.glass.*;
 
 public class FormApp extends Application
 {
-  static final int DIM_X = 10;
-  static final int DIM_Y = 20;
+  static final int DIM_X = 9;
+  static final int DIM_Y = 16;
   static final int PIX_IN_POINT = 20;
   
   private static enum GameStatus
@@ -51,7 +52,18 @@ public class FormApp extends Application
     MenuItem itemPause = new MenuItem("Pause");
     menuFile.getItems().addAll(itemStart, itemPause);
     menuBar.getMenus().addAll(menuFile);
-    root.getChildren().addAll(canvas,menuBar); 
+    
+    Label lbl = new Label("Score: 0");
+    
+    GridPane gridpane = new GridPane();
+    gridpane.setPadding(new Insets(5));
+    gridpane.setHgap(10);
+    gridpane.setVgap(10);    
+    GridPane.setHalignment(lbl, HPos.CENTER);
+    gridpane.add(menuBar, 0, 0);
+    gridpane.add(lbl, 4, 0);
+    
+    root.getChildren().addAll(canvas,gridpane);//menuBar); 
 
     scene.setOnKeyPressed(new EventHandler<KeyEvent>() //null); setOnKeyPressed setOnKeyTyped
     {
@@ -84,7 +96,7 @@ public class FormApp extends Application
     );
     
     timeline = new Timeline(
-      new KeyFrame( Duration.millis(500)
+      new KeyFrame( Duration.millis(5)
       , new EventHandler<ActionEvent>()
         {
           @Override
@@ -92,16 +104,25 @@ public class FormApp extends Application
           {
             try
             {
-              Glass2D.getInstance().doStep();
+              if (Glass2D.getInstance().doStep() == true)
+              {  
+                drawPoints();
+                lbl.setText("Score: "+Glass2D.getInstance().getScore());
+              }
               //double dur = timeline.getCycleDuration().toMillis();
               //timeline.setCycleDuration(Duration.millis(dur-1));
               //Drawing picture
-              drawPoints();
               //System.out.println("XX");
             }
             catch (NoPlaceForFigureException ex)
             {
               if (timeline != null) timeline.stop();
+              Glass2D.getInstance().initialize();
+              //drawPoints();
+              itemStart.setText("Start");
+              itemPause.setText("Pause");
+              gameStatus = GameStatus.FINISHED;
+              
               Alert alert = new Alert(Alert.AlertType.CONFIRMATION
                 , "The game is over, score:"+Glass2D.getInstance().getScore());
               alert.show(); //.showAndWait();
@@ -139,6 +160,7 @@ public class FormApp extends Application
       }
     );
     
+   
     itemPause.setOnAction
     ( new EventHandler<ActionEvent> ()
       {

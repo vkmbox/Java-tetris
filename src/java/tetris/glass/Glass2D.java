@@ -36,6 +36,15 @@ public class Glass2D
   
   private Random rnd = new Random();
   private final ArrayList<GlassPoint>[] points = new ArrayList[height]; //ArrayList<GlassPoint> points = new ArrayList<>();
+
+  private int score;
+  public int getScore() { return score; }
+  
+  private int counter;
+  
+  private int multiplier;
+  public int getMultiplier()
+  { return multiplier; }
   
   public void initialize()
   {
@@ -43,6 +52,8 @@ public class Glass2D
       points[ii] = null;
     current = null;
     score = 0;
+    multiplier = 40;
+    counter = 0;
   }
   
   private Figure current;
@@ -52,27 +63,25 @@ public class Glass2D
   }
   
   //
-  public void doStep() throws NoPlaceForFigureException
+  public boolean doStep() throws NoPlaceForFigureException
   {
+    if (counter++ < multiplier) return false;
+    else counter = 0;
     if (getCurrent() == null)
     {  
       add();
-      return;
+      return true;
     }
-    
     if ( isIntersection(getCurrent(), 0, 1) )
     {  
       getCurrent().savePointsToArray(points);
       checkAndRemoveLines();
       add();
-      return;
+      return true;
     }
-    
     getCurrent().shiftY();
+    return true;
   }
-  
-  private int score;
-  public int getScore() { return score; }  
   
   private void checkAndRemoveLines()
   {
@@ -81,7 +90,7 @@ public class Glass2D
     {  
       if (points[ii] != null && points[ii].size() >= width+1)
       {  
-        score++;
+        score++;multiplier--;
         for ( int jj = ii; jj > 0; jj-- )
         {  
           points[jj] = points[jj - 1];
