@@ -1,5 +1,10 @@
 package tetris.gui;
 
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+import javax.persistence.EntityManager;
+import javax.persistence.Persistence;
+
 import javafx.application.Application;
 import javafx.animation.*;
 import javafx.event.*;
@@ -31,9 +36,14 @@ public class FormApp extends Application
   
   Timeline timeline;
   Canvas canvas;
+  private static EntityManagerFactory emf;
+  private static EntityManager em;
   
   public static void main(String[] args)
   {
+    emf = Persistence.createEntityManagerFactory("app-main");
+    em = emf.createEntityManager();
+    
     Glass2D.SetDimensions(DIM_X, DIM_Y);
     launch(args);
   }
