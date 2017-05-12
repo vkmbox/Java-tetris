@@ -14,6 +14,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
+import tetris.dm.DataModule;
 
 public class DialogLogin
 {
@@ -49,6 +50,17 @@ public class DialogLogin
       return false;
     }
     
+    switch ( mode )
+    {
+      case "Sign in":
+        boolean result = DataModule.getInstance().checkUserPassw(userin.getText(), passwin.getText().getBytes());
+        if (result == false)
+          DialogAlert.showModal(mode, mode + " error", "Incorrect username or password"); 
+        return result;
+      case "Sign up":
+        DataModule.getInstance().saveUserLogin(userin.getText(), passwin.getText().getBytes());
+        return true;
+    }
     return true;
   }
   

@@ -6,6 +6,7 @@ http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
 version="2.1">
   <persistence-unit name="app-main" transaction-type="RESOURCE_LOCAL">
     <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+    <class>tetris.dm.UserLogin</class>    
     <properties>
       <!-- Database creation -->
       <!--property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
@@ -15,6 +16,7 @@ version="2.1">
       <!-- Configuring JDBC properties -->
       <!-- for file database change the URL to jdbc:h2:~/test-->
       <property name="javax.persistence.jdbc.url" value="jdbc:h2:mem:test" />
+      <!--property name="javax.persistence.jdbc.url" value="jdbc:h2:data" /-->
       <property name="javax.persistence.jdbc.user" value="sa" />
       <property name="javax.persistence.jdbc.password" value="" />
       <property name="javax.persistence.jdbc.driver" value="org.h2.Driver" />
@@ -23,10 +25,10 @@ version="2.1">
       <!--property name="hibernate.show_sql" value="true" />
       <property name="hibernate.format_sql" value="true" /-->
       <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect" />
-      <!--property name="hibernate.hbm2ddl.auto" value="validate" /-->
-      <!--property name="hibernate.hbm2ddl.auto" value="create-drop" />
+      <property name="hibernate.hbm2ddl.auto" value="update" />
+      <!--property name="hibernate.hbm2ddl.auto" value="create-drop" /-->
       <property name="show_sql" value="true"/>
-      <property name="hibernate.temp.use_jdbc_metadata_defaults" value="false"/-->      
+      <!--property name="hibernate.temp.use_jdbc_metadata_defaults" value="false"/-->      
 
       <!-- Configuring Connection Pool -->
       <!--property name="hibernate.c3p0.min_size" value="5" />

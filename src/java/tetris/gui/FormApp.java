@@ -16,6 +16,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.util.*;
 import java.util.List;
 import java.util.Optional;
+import javafx.application.Platform;
 
 import tetris.glass.*;
 
@@ -49,7 +50,7 @@ public class FormApp extends Application
     Pair<String, String> pair = result.orElse(null);
     userName = pair.getKey();*/
     Optional<String> result = DialogLogin.showModal();
-    if (result.isPresent() == false ) return;
+    if (result.isPresent() == false ) Platform.exit();
     userName = result.orElse("");
     
     Group root = new Group();
@@ -64,7 +65,7 @@ public class FormApp extends Application
     menuFile.getItems().addAll(itemStart, itemPause);
     menuBar.getMenus().addAll(menuFile);
     
-    Label lbl = new Label("Score: 0");
+    Label lbl = new Label(String.format("User %s, score: %d", userName, 0) );
     
     GridPane gridpane = new GridPane();
     gridpane.setPadding(new Insets(5));

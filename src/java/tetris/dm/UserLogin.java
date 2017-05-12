@@ -1,13 +1,22 @@
 package tetris.dm;
 
+//import javax.persistence.Table;
 import javax.persistence.Entity;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import javax.persistence.Id;
+//import java.security.MessageDigest;
+//import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 @Entity
+//@Table(name="USERLOGIN")
 public class UserLogin
 {
+  public UserLogin(){}
+
+  public UserLogin( String login, byte[] passw )
+  { this.login = login; setDigest(passw); }
+  
+  @Id
   private String login;
   public String getLogin()
   { return login; }
@@ -17,12 +26,12 @@ public class UserLogin
   {
     return Arrays.equals(passw, getDigest(value));
   }
-  public void setDigest( byte[] value )
+  public final void setDigest( byte[] value )
   {
     passw = getDigest(value);
   }
   
-  static final MessageDigest md;
+  /*static final MessageDigest md;
   
   static 
   { 
@@ -34,11 +43,12 @@ public class UserLogin
          throw new Error("MD5 is not implenmented in JVM");
        }
      }
-  };
+  };*/
   
-  static byte[] getDigest( byte[] value )
+  static synchronized byte[] getDigest( byte[] value )
   {
-    md.update( value);
+    return value;
+    /*md.update( value);
     MessageDigest tc;
     try
     {
@@ -47,6 +57,6 @@ public class UserLogin
     {
       throw new Error("MD5 is not implenmented in JVM");
     }
-    return tc.digest();
+    return tc.digest();*/
   }
 }
