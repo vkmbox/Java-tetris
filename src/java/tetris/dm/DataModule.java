@@ -7,7 +7,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 
-public final class DataModule {
+public final class DataModule implements AutoCloseable {
   private final EntityManagerFactory emf;
   private final EntityManager em;
   public EntityManager getEm()
@@ -24,6 +24,16 @@ public final class DataModule {
     EntityTransaction tx = em.getTransaction();
     tx.begin();
     em.persist(user);
+    tx.commit();
+    return user;
+  }
+  
+  public UserLogin mergeUserLogin( String login, byte[] passw )
+  {
+    UserLogin user = new UserLogin(login, passw );
+    EntityTransaction tx = em.getTransaction();
+    tx.begin();
+    em.merge(user);
     tx.commit();
     return user;
   }
@@ -49,5 +59,18 @@ public final class DataModule {
   {
     if (instance == null) instance = new DataModule();
     return instance;
+  }
+  
+  @Override
+  protected void finalize()
+  {
+    close();
+  }
+
+  @Override
+  public void close()
+  {
+    if ( em != null && em.isOpen() ) em.close();
+    if ( emf != null && emf.isOpen() ) emf.close();
   }
 }

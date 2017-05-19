@@ -17,6 +17,7 @@ import javafx.util.*;
 import java.util.List;
 import java.util.Optional;
 import javafx.application.Platform;
+import tetris.dm.DataModule;
 
 import tetris.glass.*;
 
@@ -41,6 +42,15 @@ public class FormApp extends Application
     Glass2D.SetDimensions(DIM_X, DIM_Y);
     launch(args);
   }
+
+  @Override
+  public void stop() throws Exception
+  {
+    super.stop();
+    DataModule.getInstance().close();
+    Platform.exit();
+    //System.exit(0);
+  }
   
   @Override
   public void start(Stage primaryStage) 
@@ -49,8 +59,12 @@ public class FormApp extends Application
     if (result.isPresent() == false ) return;
     Pair<String, String> pair = result.orElse(null);
     userName = pair.getKey();*/
-    Optional<String> result = DialogLogin.showModal();
-    if (result.isPresent() == false ) Platform.exit();
+    Optional<String> result = DialogLogin.showModal(DialogLogin.LoginMode.OnLogin, "");
+    if (result.isPresent() == false ) 
+    {
+      Platform.exit();
+      return;
+    }
     userName = result.orElse("");
     
     Group root = new Group();
@@ -62,7 +76,10 @@ public class FormApp extends Application
     Menu menuFile = new Menu("File");
     MenuItem itemStart = new MenuItem("Start");
     MenuItem itemPause = new MenuItem("Pause");
-    menuFile.getItems().addAll(itemStart, itemPause);
+    MenuItem itemDiv1 = new MenuItem("-");
+    MenuItem itemChpsw = new MenuItem("Change password");
+    
+    menuFile.getItems().addAll(itemStart, itemPause, itemDiv1, itemChpsw);
     menuBar.getMenus().addAll(menuFile);
     
     Label lbl = new Label(String.format("User %s, score: %d", userName, 0) );
@@ -119,7 +136,7 @@ public class FormApp extends Application
               if (Glass2D.getInstance().doStep() == true)
               {  
                 drawPoints();
-                lbl.setText("Score: "+Glass2D.getInstance().getScore());
+                lbl.setText(String.format("User %s, score: %d", userName, Glass2D.getInstance().getScore()));
               }
               //double dur = timeline.getCycleDuration().toMillis();
               //timeline.setCycleDuration(Duration.millis(dur-1));
@@ -129,6 +146,7 @@ public class FormApp extends Application
             catch (NoPlaceForFigureException ex)
             {
               if (timeline != null) timeline.stop();
+              int score = Glass2D.getInstance().getScore();
               Glass2D.getInstance().initialize();
               //drawPoints();
               itemStart.setText("Start");
@@ -136,7 +154,7 @@ public class FormApp extends Application
               gameStatus = GameStatus.FINISHED;
               
               Alert alert = new Alert(Alert.AlertType.CONFIRMATION
-                , "The game is over, score:"+Glass2D.getInstance().getScore());
+                , "The game is over, score:"+score);
               alert.show(); //.showAndWait();
             }
           }
@@ -204,6 +222,18 @@ public class FormApp extends Application
         { itemPause.setDisable(gameStatus == GameStatus.FINISHED); }        
       }
     );
+    
+    itemChpsw.setOnAction
+      ( new EventHandler<ActionEvent> ()
+        {
+          @Override
+          public void handle(ActionEvent event)
+          {
+            Optional<String> result = 
+              DialogLogin.showModal(DialogLogin.LoginMode.OnChangePassword, userName);
+          }
+        }
+      );
 
     primaryStage.setScene(scene);
     primaryStage.show();      

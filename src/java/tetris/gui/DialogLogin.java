@@ -25,7 +25,9 @@ public class DialogLogin
   private static PasswordField passwup1;
   private static PasswordField passwup2;
   
-  private static boolean validateAndStore(String mode)
+  public static enum LoginMode{ OnLogin, OnChangePassword };
+  
+  private static boolean validateAndStore(String mode, LoginMode loginMode)
   {
     if ( (mode.equals("Sign up") && (userup.getText() == null || userup.getText().isEmpty()))
       || (mode.equals("Sign in") && (userin.getText() == null || userin.getText().isEmpty()))
@@ -50,60 +52,69 @@ public class DialogLogin
       return false;
     }
     
+    DataModule dm = DataModule.getInstance();
     switch ( mode )
     {
       case "Sign in":
-        boolean result = DataModule.getInstance().checkUserPassw(userin.getText(), passwin.getText().getBytes());
+        boolean result = dm.checkUserPassw(userin.getText(), passwin.getText().getBytes());
         if (result == false)
           DialogAlert.showModal(mode, mode + " error", "Incorrect username or password"); 
         return result;
       case "Sign up":
-        DataModule.getInstance().saveUserLogin(userin.getText(), passwin.getText().getBytes());
+        if (loginMode == LoginMode.OnLogin)
+          dm.saveUserLogin(userup.getText(), passwup1.getText().getBytes());
+        else
+          dm.mergeUserLogin(userup.getText(), passwup1.getText().getBytes());
         return true;
     }
     return true;
   }
   
   //public static Optional<Pair<String, String>> showModal()
-  public static Optional<String> showModal()
+  public static Optional<String> showModal( LoginMode mode, String userName )
   {
     // Create the custom dialog.
     //Dialog<Pair<String, String>> dialog = new Dialog<>();
     Dialog<String> dialog = new Dialog<>();
-    dialog.setTitle("Login Dialog");
+    dialog.setTitle( mode == LoginMode.OnLogin ? "Login Dialog":"ChangePassword");
     dialog.setHeaderText("Look, a Custom Login Dialog");
 
     // Set the icon (must be included in the project).
     //dialog.setGraphic(new ImageView(this.getClass().getResource("login.png").toString()));
 
     // Set the button types.
-    ButtonType loginButtonType = new ButtonType("Login", ButtonBar.ButtonData.OK_DONE);
+    ButtonType loginButtonType = 
+      new ButtonType(mode == LoginMode.OnLogin ?"Login":"Save", ButtonBar.ButtonData.OK_DONE);
     //ButtonType buttonTypeThree = new ButtonType("Three");
     //ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);    
     dialog.getDialogPane().getButtonTypes().addAll(loginButtonType, ButtonType.CANCEL);
 
     // Create the username and password labels and fields.
-    TabPane tabPane = new TabPane();
-    Tab tab = new Tab();
+    TabPane tabPane = new TabPane(); Tab tab;
     
-    GridPane gridin = new GridPane();
-    gridin.setHgap(10);
-    gridin.setVgap(10);
-    gridin.setPadding(new Insets(20, 150, 10, 10));
+    if (mode == LoginMode.OnLogin)
+    {  
+      tab = new Tab();
 
-    userin = new TextField();
-    userin.setPromptText("Username");
-    passwin = new PasswordField();
-    passwin.setPromptText("Password");
+      GridPane gridin = new GridPane();
+      gridin.setHgap(10);
+      gridin.setVgap(10);
+      gridin.setPadding(new Insets(20, 150, 10, 10));
 
-    gridin.add(new Label("Username:"), 0, 0);
-    gridin.add(userin, 1, 0);
-    gridin.add(new Label("Password:"), 0, 1);
-    gridin.add(passwin, 1, 1);
+      userin = new TextField();
+      userin.setPromptText("Username");
+      passwin = new PasswordField();
+      passwin.setPromptText("Password");
 
-    tab.setText("Sign in");
-    tab.setContent(gridin);
-    tabPane.getTabs().add(tab);
+      gridin.add(new Label("Username:"), 0, 0);
+      gridin.add(userin, 1, 0);
+      gridin.add(new Label("Password:"), 0, 1);
+      gridin.add(passwin, 1, 1);
+
+      tab.setText("Sign in");
+      tab.setContent(gridin);
+      tabPane.getTabs().add(tab);
+    }
     
     tab = new Tab();
     GridPane gridup = new GridPane();
@@ -113,6 +124,8 @@ public class DialogLogin
 
     userup = new TextField();
     userup.setPromptText("Username");
+    userup.setText(userName);
+    userup.setEditable( mode == LoginMode.OnLogin );
     passwup1 = new PasswordField();
     passwup1.setPromptText("Password");
     passwup2 = new PasswordField();
@@ -134,7 +147,7 @@ public class DialogLogin
     // Enable/Disable login button depending on whether a username was entered.
     Button loginButton = (Button)dialog.getDialogPane().lookupButton(loginButtonType);
     loginButton.addEventFilter(ActionEvent.ACTION, event -> {
-      if (!validateAndStore(tabPane.getSelectionModel().getSelectedItem().getText())) {
+      if (!validateAndStore(tabPane.getSelectionModel().getSelectedItem().getText(), mode)) {
          event.consume();
       }
     });    
@@ -157,7 +170,7 @@ public class DialogLogin
     dialog.setResultConverter(dialogButton -> {
         if (dialogButton == loginButtonType) {
             //return new Pair<>(userin.getText(), passwin.getText());
-            return userin.getText();
+            return tabPane.getSelectionModel().getSelectedItem().getText() == "Sign in"?userin.getText():userup.getText();
         }
         return null;
     });
