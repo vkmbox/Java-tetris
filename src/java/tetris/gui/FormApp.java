@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 import javafx.application.Platform;
 import tetris.dm.DataModule;
+import tetris.dm.UserGame;
 
 import tetris.glass.*;
 
@@ -27,7 +28,8 @@ public class FormApp extends Application
   static final int DIM_Y = 16;
   static final int PIX_IN_POINT = 20;
 
-  private static String userName;
+  private String userName;
+  private UserGame userGame;
   
   private static enum GameStatus
   { FINISHED, PLAYING, PAUSED }
@@ -147,6 +149,11 @@ public class FormApp extends Application
             {
               if (timeline != null) timeline.stop();
               int score = Glass2D.getInstance().getScore();
+              if (userGame != null)
+              {
+                DataModule dm = DataModule.getInstance();
+                dm.finishUserGame(userGame, score);
+              }
               Glass2D.getInstance().initialize();
               //drawPoints();
               itemStart.setText("Start");
@@ -174,11 +181,18 @@ public class FormApp extends Application
               Glass2D.getInstance().initialize();
               itemStart.setText("Stop");
               gameStatus = GameStatus.PLAYING;
+              DataModule dm = DataModule.getInstance();
+              userGame = dm.startUserGame(userName);
               timeline.play();
               break;
             case PAUSED:
             case PLAYING:
               timeline.stop();
+              if (userGame != null) 
+              {
+                dm = DataModule.getInstance();
+                dm.finishUserGame(userGame, Glass2D.getInstance().getScore());
+              }
               Glass2D.getInstance().initialize();
               drawPoints();
               itemStart.setText("Start");

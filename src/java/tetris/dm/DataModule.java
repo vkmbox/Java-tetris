@@ -1,5 +1,6 @@
 package tetris.dm;
 
+import java.time.LocalDate;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.EntityManager;
@@ -37,20 +38,46 @@ public final class DataModule implements AutoCloseable {
     tx.commit();
     return user;
   }
-  
-  public boolean checkUserPassw( String login, byte[] passw )
+
+  public UserLogin getUserByName( String login ) throws NoResultException
   {
     Query qu = em.createQuery("select UL from UserLogin UL where UL.login = :login ");
     qu.setParameter("login", login);
+    return (UserLogin)qu.getSingleResult();
+  }
+  
+  public boolean checkUserPassw( String login, byte[] passw )
+  {
     try
     {
-      UserLogin user = (UserLogin)qu.getSingleResult();
+      UserLogin user = getUserByName(login);
       return user.isPasswCorrect(passw);
     }
     catch (NoResultException ex)
     {
       return false;
     }
+  }
+  
+  public UserGame startUserGame( String userName )
+  {
+    UserLogin login = getUserByName(userName);
+    UserGame game = new UserGame(login, LocalDate.now() );
+    EntityTransaction tx = em.getTransaction();
+    tx.begin();
+    em.persist(game);
+    tx.commit();
+    return game;    
+  }
+
+  public void finishUserGame( UserGame game, int score )
+  {
+    game.setScore(score);
+    game.setFinish(LocalDate.now());
+    EntityTransaction tx = em.getTransaction();
+    tx.begin();
+    em.persist(game);
+    tx.commit();
   }
   
   //Single - thread singleton
