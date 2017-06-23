@@ -6,6 +6,7 @@ import javax.persistence.Id;
 //import java.security.MessageDigest;
 //import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import javax.persistence.Column;
 
 @Entity
 //@Table(name="USERLOGIN")
@@ -21,6 +22,7 @@ public class UserLogin
   public String getLogin()
   { return login; }
   
+  @Column
   private byte[] passw;
   public boolean isPasswCorrect( byte[] value )
   {

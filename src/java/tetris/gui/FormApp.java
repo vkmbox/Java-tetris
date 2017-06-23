@@ -80,8 +80,9 @@ public class FormApp extends Application
     MenuItem itemPause = new MenuItem("Pause");
     MenuItem itemDiv1 = new MenuItem("-");
     MenuItem itemChpsw = new MenuItem("Change password");
+    MenuItem itemStats = new MenuItem("User statistics");
     
-    menuFile.getItems().addAll(itemStart, itemPause, itemDiv1, itemChpsw);
+    menuFile.getItems().addAll(itemStart, itemPause, itemDiv1, itemChpsw, itemStats);
     menuBar.getMenus().addAll(menuFile);
     
     Label lbl = new Label(String.format("User %s, score: %d", userName, 0) );
@@ -247,6 +248,10 @@ public class FormApp extends Application
               DialogLogin.showModal(DialogLogin.LoginMode.OnChangePassword, userName);
           }
         }
+      );
+    
+    itemStats.setOnAction
+      ( (ActionEvent event) -> { DialogStatistics.showModal(userName);}
       );
 
     primaryStage.setScene(scene);
