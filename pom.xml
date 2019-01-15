@@ -51,11 +51,11 @@
     </plugins>
   </build>
   <dependencies>
-<dependency>
+<!--dependency>
     <groupId>oracle</groupId>
     <artifactId>ojdbc6</artifactId>
     <version>11.2.0.3</version>
-</dependency>
+</dependency-->
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-core</artifactId>
